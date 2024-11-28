@@ -7,9 +7,17 @@
 
 import UIKit
 
+enum Section : Int {
+    case TrendingMovies = 0
+    case TrendingTv = 1
+    case Popular = 2
+    case Upcoming = 3
+    case TopRated = 4
+}
+
 class HomeViewController: UIViewController{
     
-    let sectionTitles : [String] = ["Trending Movies", "Popular", "Trending Tv", "Upcoming Movies", "Top Rated"]
+    let sectionTitles : [String] = ["Trending Movies", "Trending Tv","Popular", "Upcoming Movies", "Top Rated"]
     
     private let homeFeedTable : UITableView = {
         let table = UITableView(frame: .zero, style: .grouped)
@@ -30,7 +38,7 @@ class HomeViewController: UIViewController{
         homeFeedTable.tableHeaderView = headerView
         
         configureNavBar()
-        getTrendingMovies()
+        
     }
     
     private func configureNavBar() {
@@ -58,12 +66,6 @@ class HomeViewController: UIViewController{
         homeFeedTable.frame = view.bounds
     }
     
-    private func getTrendingMovies() {
-        APICaller.shared.getTrendingMovies { _ in
-        }
-    }
-    
-    
 }
 
 extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
@@ -89,6 +91,10 @@ extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell else {
             return UITableViewCell()
         }
+        
+        switch indexPath.section {
+            
+        }
         return cell
     }
     
@@ -108,19 +114,9 @@ extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
         header.textLabel?.frame = CGRect(x: header.bounds.origin.x + 20, y: header.bounds.origin.y, width: 100, height: header.bounds.height)
         header.textLabel?.textColor = .white
         header.textLabel?.text = header.textLabel?.text?.localizedCapitalized
-        
-        
+
     }
 }
 
-extension UIImage {
-    func resized(to size: CGSize) -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
-        self.draw(in: CGRect(origin: .zero, size: size))
-        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return resizedImage
-    }
-}
 
 
