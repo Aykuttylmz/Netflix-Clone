@@ -94,10 +94,67 @@ extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
         
         switch indexPath.section {
             
+        case Section.TrendingMovies.rawValue:
+            
+            APICaller.shared.getTrendingMovies { result in
+                switch result {
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+            
+        case Section.TrendingTv.rawValue:
+            
+            APICaller.shared.getTrendingTvs { result in
+                switch result {
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+            
+        case Section.Popular.rawValue:
+            
+            APICaller.shared.getPopularMovies { result in
+                switch result {
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+                
+            }
+            
+        case Section.TopRated.rawValue:
+            
+            APICaller.shared.getTopRatedMovies {result in
+                switch result {
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+                
+            }
+            
+        case Section.Upcoming.rawValue:
+            
+            APICaller.shared.getUpcomingMovies { result in
+                switch result {
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        default:
+            return UITableViewCell()
         }
         return cell
     }
-    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let defaultOffset = view.safeAreaInsets.top
         let offset = scrollView.contentOffset.y + defaultOffset
@@ -116,6 +173,7 @@ extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
         header.textLabel?.text = header.textLabel?.text?.localizedCapitalized
 
     }
+    
 }
 
 
