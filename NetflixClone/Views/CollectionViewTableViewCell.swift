@@ -101,5 +101,4 @@ extension CollectionViewTableViewCell : UICollectionViewDelegate, UICollectionVi
             }
         }
     }
-    
 }
