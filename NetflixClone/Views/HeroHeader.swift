@@ -33,7 +33,6 @@ class HeroHeader: UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.image = UIImage(named: "itmovie")
         return imageView
     }()
     
@@ -57,9 +56,11 @@ class HeroHeader: UIView {
         
         applyConstraints()
         
+        
     }
     
     private func applyConstraints() {
+        
         let playButtonConstraints = [
             playButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 70),
             playButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -50),
@@ -80,6 +81,15 @@ class HeroHeader: UIView {
     
     required init?(coder: NSCoder) {
         fatalError()
+    }
+    
+    public func configure(with model : TitleViewModel) {
+        
+        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(model.posterURL)") else {
+            return
+        }
+        heroImageView.sd_setImage(with: url,completed: nil)
+        
     }
     
     override func layoutSubviews() {

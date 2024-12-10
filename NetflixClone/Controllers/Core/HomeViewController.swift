@@ -17,6 +17,9 @@ enum Section : Int {
 
 class HomeViewController: UIViewController{
     
+    private var randomTrendingMovie : Title?
+    private var headerView : HeroHeader?
+    
     let sectionTitles : [String] = ["Trending Movies", "Trending Tv","Popular", "Upcoming Movies", "Top Rated"]
     
     private let homeFeedTable : UITableView = {
@@ -27,18 +30,34 @@ class HomeViewController: UIViewController{
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         view.backgroundColor = .systemBackground
         view.addSubview(homeFeedTable)
         
         homeFeedTable.delegate = self
         homeFeedTable.dataSource = self
         
-        let headerView = HeroHeader(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
+        headerView = HeroHeader(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
         homeFeedTable.tableHeaderView = headerView
         
         configureNavBar()
+        configureHeroHeader()
         
+        
+    }
+    
+    private func configureHeroHeader() {
+        APICaller.shared.getTrendingMovies { [weak self] result in
+            switch result {
+            case.success(let titles):
+                let selectedTitle = titles.randomElement()
+                self?.randomTrendingMovie = selectedTitle
+                self?.headerView?.configure(with: TitleViewModel(titleName: selectedTitle?.original_title ?? "", posterURL: selectedTitle?.poster_path ?? ""))
+                
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     private func configureNavBar() {
@@ -66,6 +85,63 @@ class HomeViewController: UIViewController{
         homeFeedTable.frame = view.bounds
     }
     
+    func fetchTitles(for section: Section, completion: @escaping ([Title]) -> Void) {
+        
+        switch section {
+        case .TrendingMovies:
+            APICaller.shared.getTrendingMovies { result in
+                switch result {
+                case .success(let titles):
+                    completion(titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                    completion([])
+                }
+            }
+        case .TrendingTv:
+            APICaller.shared.getTrendingTvs { result in
+                switch result {
+                case .success(let titles):
+                    completion(titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                    completion([])
+                }
+            }
+        case .Popular:
+            APICaller.shared.getPopularMovies { result in
+                switch result {
+                case .success(let titles):
+                    completion(titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                    completion([])
+                }
+            }
+        case .TopRated:
+            APICaller.shared.getTopRatedMovies { result in
+                switch result {
+                case .success(let titles):
+                    completion(titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                    completion([])
+                }
+            }
+        case .Upcoming:
+            APICaller.shared.getUpcomingMovies { result in
+                switch result {
+                case .success(let titles):
+                    completion(titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                    completion([])
+                }
+            }
+        }
+    }
+
+    
 }
 
 extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
@@ -91,6 +167,8 @@ extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell else {
             return UITableViewCell()
         }
+        
+        cell.delegate = self
         
         switch indexPath.section {
             
@@ -173,6 +251,20 @@ extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
         header.textLabel?.text = header.textLabel?.text?.localizedCapitalized
 
     }
+    
+}
+
+extension HomeViewController : CollectionViewTableViewCellDelegate {
+    
+    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel) {
+        
+        DispatchQueue.main.async { [weak self] in
+            let vc = TitlePreviewViewController()
+            vc.configure(with: viewModel)
+            self?.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
     
 }
 
